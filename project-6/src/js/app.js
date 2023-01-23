@@ -74,7 +74,7 @@ App = {
         }
         // If no injected web3 instance is detected, fall back to Ganache
         else {
-            App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+            App.web3Provider = new providers.HttpProvider('http://localhost:7545');
         }
 
         App.getMetaskAccountID();
@@ -161,12 +161,10 @@ App = {
                 return await App.fetchItemBufferTwo(event);
                 break;
             }
+
     },
 
     harvestItem: function(event) {
-        event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.harvestItem(
                 App.upc, 
@@ -175,8 +173,8 @@ App = {
                 App.originFarmInformation, 
                 App.originFarmLatitude, 
                 App.originFarmLongitude, 
-                App.productNotes
-            );
+                App.productNotes,
+                {from: App.metamaskAccountID});
         }).then(function(result) {
             $("#ftc-item").text(result);
             console.log('harvestItem',result);
@@ -218,7 +216,7 @@ App = {
         var processId = parseInt($(event.target).data('id'));
 
         App.contracts.SupplyChain.deployed().then(function(instance) {
-            const productPrice = web3.toWei(1000000, "gwei");
+            const productPrice = web3.utils.toWei("1000000", "gwei");
             console.log('productPrice',productPrice);
             return instance.sellItem(App.upc, App.productPrice, {from: App.metamaskAccountID});
         }).then(function(result) {
@@ -234,7 +232,7 @@ App = {
         var processId = parseInt($(event.target).data('id'));
 
         App.contracts.SupplyChain.deployed().then(function(instance) {
-            const walletValue = web3.toWei(2000000, "gwei");
+            const walletValue = web3.utils.toWei("2000000", "gwei");
             return instance.buyItem(App.upc, {from: App.metamaskAccountID, value: walletValue});
         }).then(function(result) {
             $("#ftc-item").text(result);
@@ -327,14 +325,18 @@ App = {
         }
 
         App.contracts.SupplyChain.deployed().then(function(instance) {
-        var events = instance.allEvents(function(err, log){
-          if (!err)
-            $("#ftc-events").append('<li>' + log.event + ' - ' + log.transactionHash + '</li>');
-        });
+            instance.allEvents(function(err, log) {
+                if (!err && !$("#" + log.transactionHash).length)
+                    $("#ftc-events").append('<li id="' + log.transactionHash + '">' + log.event + ' - ' + log.transactionHash + '</li>');
+                }
+            );
         }).catch(function(err) {
           console.log(err.message);
         });
         
+        setTimeout(function () {
+            App.fetchEvents();
+        }, 1000);
     }
 };
 

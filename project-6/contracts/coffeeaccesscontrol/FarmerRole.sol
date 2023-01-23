@@ -1,6 +1,7 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.8.13;
 
 // Import the library 'Roles'
+// SPDX-License-Identifier: MIT
 import "./Roles.sol";
 
 // Define a contract 'FarmerRole' to manage this role - add, remove, check
@@ -15,7 +16,7 @@ contract FarmerRole {
   Roles.Role private farmers;
 
   // In the constructor make the address that deploys this contract the 1st farmer
-  constructor() public {
+  constructor() {
     _addFarmer(msg.sender);
   }
 
