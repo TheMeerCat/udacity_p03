@@ -50,7 +50,7 @@ Launch Ganache:
 ganache-cli -m "spirit supply whale amount human item harsh scare congress discover talent hamster"
 ```
 
-Your terminal should look something like this:
+Your termin^al should look something like this:
 
 ![truffle test](images/ganache-cli.png)
 
